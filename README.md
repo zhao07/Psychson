@@ -17,7 +17,11 @@ Take note that the firmware patches have only been tested against PS2251-03 firm
 
 As long as you are using the correct firmware image for your controller version and NAND chip, there is no harm in downgrading to an earlier version (such as from 1.10.53).
 
+**WARNING: This is experimental software. Use on unsupported devices, or even on supported devices, may cause loss of data, or even permananent damage to devices. Use at your own risk.**
+
 ## Getting Started
+*See [Known Supported Devices](https://github.com/adamcaudill/Psychson/wiki/Known-Supported-Devices) for information on supported devices; use on an unsupported device may cause permanent damage to the device.*
+
 To get started, you'll need to obtain a burner image, which is the 8051 executable responsible for flashing firmware to the drive.
 
 See [Obtaining a Burner Image](https://github.com/adamcaudill/Psychson/wiki/Obtaining-a-Burner-Image) on the wiki for more information.
@@ -34,7 +38,7 @@ Run DriveCom, passing in the drive letter representing the drive you want to fla
 
 where `E` is the drive letter, `BN03V104M.BIN` is the path to the burner image, and `fw.bin` is the resulting firmware dump.
 
-Currently, only 200KB firmware images can be dumped (which is what the [Patriot 8GB Supersonic Xpress](http://bit.ly/badusb4you) drive uses).
+Currently, only 200KB firmware images can be dumped (which is what the [Patriot 8GB Supersonic Xpress](http://www.amazon.com/gp/product/B005EWB15W/) drive uses).
 
 ## Flashing Custom Firmware
 Run `DriveCom`, passing in the drive letter representing the drive you want to flash, the path of the burner image you obtained, and the path of the firmware image you want to flash:
@@ -109,6 +113,21 @@ Go to the `patch` directory and run `build.bat`. It will produce a file at `patc
 
 You can now flash this file to your drive.
 
+## Running No Boot Mode Patch
+Go into the `patch` directory and modify `base.c` to disable all other patches, and enable the no boot patch:
+
+    //#define FEATURE_CHANGE_PASSWORD
+    //#define FEATURE_EXPOSE_HIDDEN_PARTITION
+    #define FEATURE_PREVENT_BOOT
+
+Place the firmware image you want to patch into the `patch` directory and name it `fw.bin`.
+
+Go to the `patch` directory and run `build.bat`. It will produce a file at `patch\bin\fw.bin` -- this is the modified firmware image.
+
+You can now flash this file to your drive. Once flashed to your device, it will no longer act on the command to jump to boot mode. To update the firmware again will require [shorting pins](https://github.com/adamcaudill/Psychson/blob/master/docs/PinsToShortUponPlugInForBootMode.jpg) on the controller. To make it impossible* to update, after flashing this patch coat the device with epoxy.
+
+* *Within reason; it may be possible to get to boot mode via an exploit or other non-standard method.*
+
 #### Converting to Mode 7
 You can run the `ModeConverterFF01.exe` application (see [Useful Links](https://github.com/adamcaudill/Psychson/wiki/Useful-Links)) to split the drive into public and secure partitions, or restore the original (mode 3) functionality.
 
@@ -127,4 +146,4 @@ Once it has built successfully, use DriveCom to flash the resulting file (`bin\f
 
 ## Questions? Comments? Complaints?
 
-Unfortunately this isn't the most straightforward process at the moment, so if you have questions, open an [issue](https://github.com/adamcaudill/Psychson/issues) or e-mail brandonlw@gmail.com and I'll do my best to help (and update the readme/wiki).
+Unfortunately this isn't the most straightforward process at the moment, so if you have questions, open an [issue](https://github.com/adamcaudill/Psychson/issues) and we'll do our best to help (and update the readme/wiki).
